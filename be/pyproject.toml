@@ -7,8 +7,13 @@ requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.116.1",
     "httpx>=0.28.1",
+    "langchain-community>=0.3.27",
     "langchain>=0.3.26",
     "langgraph>=0.5.3",
     "pydantic>=2.11.7",
+    "pypdf>=5.8.0",
     "uvicorn[standard]>=0.35.0",
+    "langchain-openai>=0.3.28",
+    "chromadb>=1.0.15",
+    "python-multipart>=0.0.20",
 ]
