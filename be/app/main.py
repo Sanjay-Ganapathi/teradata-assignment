@@ -1,11 +1,13 @@
 import os
+from typing import List, Literal
 from pydantic import BaseModel
 import uvicorn
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 
 from app.vector_store import process_and_store_document
-
+from app.agent import agent_app
 load_dotenv()
 
 # TODO change title and description
@@ -19,6 +21,19 @@ app = FastAPI(
 class UploadResponse(BaseModel):
     filename: str
     message: str
+
+
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
+class ChatRequest(BaseModel):
+    messages: List[ChatMessage]
+
+
+class ChatResponse(BaseModel):
+    answer: str
 
 
 @app.get("/")
@@ -48,6 +63,30 @@ async def upload_document(file: UploadFile = File(...)):
         }
     except Exception as e:
 
+        print(f"Error processing file: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"An error occurred while processing the file: {e}")
+
+
+@app.post("/chat", response_model=ChatResponse, tags=["Chat"])
+def chat_with_agent(request: ChatRequest):
+    try:
+        langchain_messages: List[BaseMessage] = []
+        for msg in request.messages:
+            if msg.role == "user":
+                langchain_messages.append(HumanMessage(content=msg.content))
+            elif msg.role == "assistant":
+                langchain_messages.append(AIMessage(content=msg.content))
+
+        inputs = {"messages": langchain_messages}
+
+        final_state = agent_app.invoke(inputs)
+
+        final_message = final_state['messages'][-1]
+
+        return {"answer": final_message.content}
+
+    except Exception as e:
         print(f"Error processing file: {e}")
         raise HTTPException(
             status_code=500, detail=f"An error occurred while processing the file: {e}")
