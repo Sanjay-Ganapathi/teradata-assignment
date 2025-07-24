@@ -1,3 +1,4 @@
+
 import os
 from typing import List, Literal
 from pydantic import BaseModel
@@ -8,7 +9,7 @@ from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 
 from app.vector_store import process_and_store_document
 from app.agent import agent_app
-load_dotenv()
+
 
 # TODO change title and description
 app = FastAPI(
@@ -30,6 +31,7 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
+    user_id: str = "default-user"
 
 
 class ChatResponse(BaseModel):
@@ -71,6 +73,7 @@ async def upload_document(file: UploadFile = File(...)):
 @app.post("/chat", response_model=ChatResponse, tags=["Chat"])
 def chat_with_agent(request: ChatRequest):
     try:
+
         langchain_messages: List[BaseMessage] = []
         for msg in request.messages:
             if msg.role == "user":

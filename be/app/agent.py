@@ -1,19 +1,15 @@
 import os
-from typing import List, TypedDict, Sequence
-from typing_extensions import Annotated
-from langchain_core.documents import Document
-from langchain_core.prompts import ChatPromptTemplate
 from langchain.tools.retriever import create_retriever_tool
-from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
+from langchain_openai import AzureChatOpenAI
 from langgraph.graph import END, StateGraph, START
-from langgraph.graph.message import add_messages
 from app.vector_store import retriever
-from langchain_core.messages import BaseMessage, ToolMessage, HumanMessage, SystemMessage
 from langgraph.graph import MessagesState
 from langgraph.prebuilt import ToolNode, tools_condition
 
+
 llm = AzureChatOpenAI(azure_deployment=os.getenv(
     'AZURE_OPENAI_MODEL'), api_version="2024-10-21")
+
 
 retriever_tool = create_retriever_tool(
     retriever,
