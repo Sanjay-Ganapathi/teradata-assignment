@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./be/.env
+    volumes:
+      - chroma_db:/app/chroma_db_agent
+      - doc_store:/app/doc_store_agent
+
+volumes:
+  chroma_db:
+  doc_store:
