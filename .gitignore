@@ -2,6 +2,8 @@
 .env
 .env.**
 node_modules
+fe/node_modules
 dist
 be/chroma_db
 be/doc_store
+fe/.next

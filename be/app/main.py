@@ -1,15 +1,17 @@
 
 import os
-from typing import List, Literal
+from typing import AsyncGenerator, List, Literal
 from pydantic import BaseModel
 import uvicorn
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
-
+import asyncio
+from fastapi.responses import StreamingResponse
 from app.vector_store import process_and_store_document
 from app.agent import agent_app
 
+load_dotenv()
 
 # TODO change title and description
 app = FastAPI(
@@ -31,7 +33,6 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
-    user_id: str = "default-user"
 
 
 class ChatResponse(BaseModel):
@@ -94,6 +95,36 @@ def chat_with_agent(request: ChatRequest):
         raise HTTPException(
             status_code=500, detail=f"An error occurred while processing the file: {e}")
 
+
+async def stream_agent_response(messages: List[BaseMessage]) -> AsyncGenerator[str, None]:
+
+    async for event in agent_app.astream_events(
+        {"messages": messages},
+        version="v1",
+    ):
+        kind = event["event"]
+
+        if kind == "on_chat_model_stream":
+
+            content = event["data"]["chunk"].content
+            if content:
+
+                yield content
+
+
+@app.post("/chat/stream")
+async def chat_stream_with_agent(request: ChatRequest):
+
+    langchain_messages: List[BaseMessage] = [
+        HumanMessage(content=msg.content) if msg.role == "user"
+        else AIMessage(content=msg.content)
+        for msg in request.messages
+    ]
+
+    return StreamingResponse(
+        stream_agent_response(langchain_messages),
+        media_type="text/plain"
+    )
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
