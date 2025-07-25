@@ -54,7 +54,7 @@ The agent is built using LangGraph's "Agent with a Tool" paradigm. The core of t
 
 ```bash
 git clone https://github.com/Sanjay-Ganapathi/teradata-assignment.git
-cd
+cd teradata-assignment/
 ```
 
 ---
