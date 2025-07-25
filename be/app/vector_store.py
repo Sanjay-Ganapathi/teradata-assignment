@@ -66,8 +66,11 @@ async def process_and_store_document(file: UploadFile):
         else:
 
             return
+        docs_with_content = [doc for doc in docs if doc.page_content.strip()]
+        if not docs_with_content:
+            return
 
-        retriever.add_documents(docs, ids=None)
+        retriever.add_documents(docs_with_content, ids=None)
         print(f"Successfully processed and stored document: {file.filename}")
 
     finally:
