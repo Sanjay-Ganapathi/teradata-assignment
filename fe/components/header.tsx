@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 export function Header() {
     return (
         <header className="absolute top-0 left-0 right-0 p-4 bg-background/50 backdrop-blur-sm flex justify-between items-center border-b">
-            <h1 className="text-xl font-bold">Agentic RAG</h1>
+            <h1 className="text-xl font-bold">RAG Chatbot</h1>
             <nav className="flex items-center space-x-4">
                 <Button variant="ghost" asChild>
                     <Link href="/">Chat</Link>

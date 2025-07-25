@@ -1,4 +1,4 @@
-// fe/app/upload/page.tsx
+
 "use client";
 
 import { useState, ChangeEvent, useRef } from "react";

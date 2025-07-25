@@ -1,8 +1,9 @@
-
+"use client";
 import { useEffect, useRef } from "react";
 import { Message } from "@/hooks/use-chat";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import { MarkdownContent } from "./ui/markdown-content";
 
 interface ChatMessagesProps {
     messages: Message[];
@@ -17,7 +18,7 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
     }, [messages]);
 
     return (
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-6 px-12 space-y-4">
             {messages.map((msg, index) => (
                 <div
                     key={msg.id}
@@ -34,7 +35,7 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
                                 : "bg-muted"
                         )}
                     >
-                        <p className="text-sm">{msg.content}</p>
+                        <MarkdownContent id={msg.id} content={msg.content.trim()} />
                     </div>}
                 </div>
             ))}
